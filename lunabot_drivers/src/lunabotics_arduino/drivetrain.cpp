@@ -54,4 +54,11 @@ namespace drivetrain {
 			}
 		}
 	}
+	float pid_calculate(float goal, float error) {
+		float p = 0;
+		float f = 0;
+		float vel = goal * f;
+		vel += p * error;
+		return vel;
+	}
 }
