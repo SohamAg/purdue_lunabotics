@@ -3,12 +3,15 @@
         {
             "name": "Linux",
             "includePath": [
+                "${default}",
                 "${workspaceFolder}/**",
                 "/opt/ros/noetic/include",
                 "/opt/ros/noetic/include/ros",
                 "~/Arduino/libraries/ros_lib",
                 "/usr/include/pcl-1.10",
-                "/usr/include/eigen3"
+                "/usr/include/eigen3",
+                "~/luna_ws/devel/include/**",
+                "~/luna_ws/src/purdue_lunabotics/lunabot_filtering/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
