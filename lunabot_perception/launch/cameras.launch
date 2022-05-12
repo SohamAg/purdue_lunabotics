@@ -1,14 +1,16 @@
 <launch>
   <arg name="serial_no_d435"    			default="939622074382"/> 		
   <arg name="serial_no_t265"    			default="943222111167"/> 	
-  <arg name="initial_reset"                 default="false"/>
-  <arg name="sim"                           default="false"/>
+  <arg name="initial_reset"           default="false"/>
+  <arg name="unite_imu_method"        default="copy"/>
+  <arg name="sim"                     default="false"/>
 
   <group ns="t265" unless="$(arg sim)">
     <include file="$(find realsense2_camera)/launch/rs_t265.launch">
       <arg name="serial_no" value="$(arg serial_no_t265)" />
       <arg name="tf_prefix" value="t265" />
       <arg name="initial_reset" value="$(arg initial_reset)"/>
+      <arg name="unite_imu_method" value="$(arg unite_imu_method)"/>
     </include>
   </group>
 

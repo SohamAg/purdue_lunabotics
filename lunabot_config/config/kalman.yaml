@@ -1,0 +1,4 @@
+
+corrected_odom_topic: "odom_corrected"
+odom_input_0_topic: "odom"
+odom_input_1_topic: "bin_pose"

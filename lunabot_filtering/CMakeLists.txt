@@ -128,10 +128,10 @@ include_directories(
 #   src/${PROJECT_NAME}/lunabot_filtering.cpp
 # )
 
-add_executable(${PROJECT_NAME}_kalman_node nodes/kalman_node.cpp src/kalman.cpp)
-set_target_properties(${PROJECT_NAME}_kalman_node PROPERTIES OUTPUT_NAME kalman_node PREFIX "")
-add_dependencies(${PROJECT_NAME}_kalman_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_kalman_node
+add_executable(${PROJECT_NAME}_kalman_odom_node nodes/kalman_odom_node.cpp src/kalman.cpp)
+set_target_properties(${PROJECT_NAME}_kalman_odom_node PROPERTIES OUTPUT_NAME kalman_node PREFIX "")
+add_dependencies(${PROJECT_NAME}_kalman_odom_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_kalman_odom_node
  ${catkin_LIBRARIES}
 )
 

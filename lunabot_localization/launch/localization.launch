@@ -2,7 +2,6 @@
 <launch>
 
   <node pkg="lunabot_localization" type="base_pose_manager_node" name="base_pose_manager"/>
-
   <include file="$(find lunabot_perception)/launch/cameras.launch" />
 
 </launch>
