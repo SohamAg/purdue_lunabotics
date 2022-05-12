@@ -54,18 +54,19 @@ private:
 	const int dt = 1;
 	Kalman k;
 	ros::Publisher corrected_pose_pub;
-	ros::Subscriber odom_input_0_sub;
-	ros::Subscriber odom_input_1_sub;
+	ros::Subscriber apriltag_pose_sub;
+	ros::Subscriber t265_odom_sub;
 	ros::Subscriber cmd_vel_sub;
+	ros::Subscriber imu_sub;
 
 	Vec odom_in_[SENSOR_CNT]; // [apriltag, t265, imu]
 	Vec odom_corrected_;
 	Vec ctrl_u_;
 
 	void cmd_vel_cb(const geometry_msgs::Twist &msg);
-	void pose_input_apriltag_cb(const nav_msgs::Odometry &msg);
+	void pose_apriltag_cb(const nav_msgs::Odometry &msg);
 	void odom_t265_cb(const nav_msgs::Odometry &msg);
-	void imu_input_cb(const sensor_msgs::Imu &msg);
+	void imu_cb(const sensor_msgs::Imu &msg);
 	void publish_corrected();
 
 public:
@@ -73,7 +74,7 @@ public:
 	void update();
 };
 
-void KalmanOdomNode::pose_input_apriltag_cb(const nav_msgs::Odometry &msg)
+void KalmanOdomNode::pose_apriltag_cb(const nav_msgs::Odometry &msg)
 {
 	odom_in_[APRILTAG] = odom_to_vec(msg);
 }
@@ -83,9 +84,12 @@ void KalmanOdomNode::odom_t265_cb(const nav_msgs::Odometry &msg)
 	odom_in_[T265] = odom_to_vec(msg);
 }
 
-void KalmanOdomNode::imu_input_cb(const sensor_msgs::Imu &msg)
+void KalmanOdomNode::imu_cb(const sensor_msgs::Imu &msg)
 {
-	odom_in_[IMU] = msg;
+	odom_in_[IMU][2] = msg.linear_acceleration.x;
+	odom_in_[IMU][5] = msg.linear_acceleration.y;
+	odom_in_[IMU][8] = msg.linear_acceleration.z;
+	odom_in_[IMU][10] = msg.angular_velocity.z;
 }
 
 void KalmanOdomNode::cmd_vel_cb(const geometry_msgs::Twist &msg)
@@ -130,7 +134,7 @@ KalmanOdomNode::KalmanOdomNode()
 	P2(2, 2) = 1.0; // x''
 	P2(5, 5) = 1.0; // y''
 	P2(8, 8) = 1.0; // z''
-	P2(11, 11) = 1.0; // theta''
+	P2(10, 10) = 1.0; // theta''
 	H2 = P2;
 	R2 = P2;
 
@@ -164,17 +168,20 @@ KalmanOdomNode::KalmanOdomNode()
 	k = Kalman(x0, Q, F, G, Parray, Harray, Rarray);
 
 	std::string corrected_odom_topic;
-	std::string odom_input_0_topic;
-	std::string odom_input_1_topic;
+	std::string apriltag_pose_topic;
+	std::string t265_odom_topic;
+	std::string imu_topic;
 	std::string cmd_vel_topic;
 	ros::param::get("corrected_odom_topic", corrected_odom_topic);
-	ros::param::get("odom_input_0_topic", odom_input_0_topic);
-	ros::param::get("odom_input_1_topic", odom_input_1_topic);
+	ros::param::get("apriltag_pose_topic", apriltag_pose_topic);
+	ros::param::get("t265_odom_topic", t265_odom_topic);
+	ros::param::get("imu_topic", imu_topic);
 	ros::param::get("/cmd_vel_topic", cmd_vel_topic);
 	corrected_pose_pub = nh_.advertise<nav_msgs::Odometry>(corrected_odom_topic, 10);
-	odom_input_0_sub = nh_.subscribe(odom_input_0_topic, 10, &KalmanOdomNode::pose_input_apriltag_cb, this);
-	odom_input_0_sub = nh_.subscribe(odom_input_0_topic, 10, &KalmanOdomNode::odom_t265_cb, this);
-	cmd_vel_sub = nh_.subscribe(cmd_vel_topic, 10, &KalmanOdomNode::odom_t265_cb, this);
+	apriltag_pose_sub = nh_.subscribe(apriltag_pose_topic, 10, &KalmanOdomNode::pose_apriltag_cb, this);
+	t265_odom_sub = nh_.subscribe(t265_odom_topic, 10, &KalmanOdomNode::odom_t265_cb, this);
+	imu_sub = nh_.subscribe(imu_topic, 10, &KalmanOdomNode::imu_cb, this);
+	cmd_vel_sub = nh_.subscribe(cmd_vel_topic, 10, &KalmanOdomNode::cmd_vel_cb, this);
 }
 
 void KalmanOdomNode::update()

@@ -14,7 +14,7 @@
 // Explained here: https://www.kalmanfilter.net/multiSummary.html
 
 // Consts and typedefs
-const int SZ = 12; // Number of variables tracked- x, x', x'', y, y', y'', z, z', z'', theta, theta', theta''
+const int SZ = 11; // Number of variables tracked- x, x', x'', y, y', y'', z, z', z'', theta_z, theta_z'
 typedef Eigen::Matrix<double, SZ, SZ> Mat;
 typedef Eigen::Matrix<double, SZ, 1> Vec;
 const int SENSOR_CNT = 3; // Number of sensors
